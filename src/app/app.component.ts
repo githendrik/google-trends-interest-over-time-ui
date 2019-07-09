@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { ApiHttpService } from './api-http.service';
 
 @Component({
   selector: 'app-root',
@@ -6,5 +8,15 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  title = 'google-trends-interest-over-time-ui';
+  public startDate: string;
+  public endDate: string;
+  public keyword: string;
+
+  public response$: Observable<any> = of(null);
+
+  constructor(private apiHttpService: ApiHttpService) {}
+
+  getInterestOverTime() {
+    this.response$ = this.apiHttpService.getInterestOverTime(this.keyword, this.startDate, this.endDate);
+  }
 }

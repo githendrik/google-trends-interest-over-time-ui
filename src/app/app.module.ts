@@ -1,5 +1,8 @@
+import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { ApiHttpService } from './api-http.service';
 
 import { AppComponent } from './app.component';
 
@@ -8,9 +11,13 @@ import { AppComponent } from './app.component';
     AppComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpClientModule,
+    FormsModule
   ],
-  providers: [],
+  providers: [
+      ApiHttpService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
