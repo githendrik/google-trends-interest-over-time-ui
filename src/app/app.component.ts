@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiHttpService } from './api-http.service';
+import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+
+export interface CsvRow {
+  keyword: string;
+  startDate: string;
+  endDate: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -11,12 +18,69 @@ export class AppComponent {
   public startDate: string;
   public endDate: string;
   public keyword: string;
+  public manualResponse$: Observable<any> = of(null);
+  public csvResponse$: Observable<any> = of(null);
 
-  public response$: Observable<any> = of(null);
+  public csvContents: CsvRow[];
+
+  public csvOutput: any[];
 
   constructor(private apiHttpService: ApiHttpService) {}
 
-  getInterestOverTime() {
-    this.response$ = this.apiHttpService.getInterestOverTime(this.keyword, this.startDate, this.endDate);
+  getManualResponse() {
+    this.manualResponse$ = this.apiHttpService.getInterestOverTime(this.keyword, this.startDate, this.endDate);
+  }
+
+  getCsvResponse() {
+    const promises = [];
+
+    this.csvContents.forEach(row => {
+      promises.push(this.apiHttpService.getInterestOverTime(row.keyword, row.startDate, row.endDate).toPromise());
+    });
+
+    Promise.all(promises).then((responses) => {
+      this.csvOutput = [];
+      for (let i=0; i<this.csvContents.length; i++) {
+        const currentResponse = responses[i];
+        const currentValues = currentResponse.map(r => r.value);
+        const row = [this.csvContents[i].keyword, this.csvContents[i].startDate, this.csvContents[i].endDate, ...currentValues];
+        this.csvOutput.push(row);
+      }
+    });
+  }
+
+  public dropped(files: NgxFileDropEntry[]) {
+    for (const droppedFile of files) {
+      // Is it a file?
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        fileEntry.file((file: File) => {
+
+          const reader = new FileReader();
+          reader.onload = (e: any) => {
+            const rawFile = e.target.result;
+            if (typeof rawFile === 'string') {
+              const parsedFile = rawFile.split('\n').map(row => {
+                const cols = row.split(',');
+                return {
+                  keyword: cols[0],
+                  startDate: cols[1],
+                  endDate: cols[2]
+                };
+              });
+
+              parsedFile.reverse().pop(); // Remove header row
+              this.csvContents = parsedFile.reverse();
+            }
+          };
+
+          reader.readAsText(file);
+        });
+      } else {
+        // It was a directory (empty directories are added, otherwise only files)
+        const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
+        console.log(droppedFile.relativePath, fileEntry);
+      }
+    }
   }
 }

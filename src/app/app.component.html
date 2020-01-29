@@ -1,13 +1,47 @@
+<h1>Search manually</h1>
 <div>
-  <label for="keyword">Keyword:</label> <input id="keyword" type="text" placeholder="e.g. 'Simpsons'" [(ngModel)]="keyword" />
+  <label for="keyword">Keyword:</label> <input id="keyword" type="text" placeholder="e.g. 'Simpsons'"
+    [(ngModel)]="keyword" />
 </div>
 <div>
-  <label for="startDate">StartDate:</label> <input id="startDate" type="text" placeholder="15.03.2018" [(ngModel)]="startDate"/>
+  <label for="startDate">StartDate:</label> <input id="startDate" type="text" placeholder="15.03.2018"
+    [(ngModel)]="startDate" />
 </div>
 <div>
-  <label for="endDate">EndDate:</label> <input id="endDate" type="text" placeholder="15.03.2018" [(ngModel)]="endDate"/>
+  <label for="endDate">EndDate:</label> <input id="endDate" type="text" placeholder="15.03.2018"
+    [(ngModel)]="endDate" />
 </div>
 
-<button (click)="getInterestOverTime()">Get Data</button>
 
-<pre>{{ response$ | async | json }}</pre>
+<button (click)="getManualResponse()">Get Data</button>
+
+<pre>{{ manualResponse$ | async | json }}</pre>
+
+<hr>
+
+<h1>Upload CSV</h1>
+<p>You can upload a csv file containing keyword,startdate,enddate rows here. The first row will be skipped as it usually contains header data</p>
+<ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
+  <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+    Drop CSV here
+  </ng-template>
+</ngx-file-drop>
+
+<table style="margin-top: 20px; margin-bottom: 20px">
+  <thead>
+    <th>Keyword</th>
+    <th>StartDate</th>
+    <th>EndDate</th>
+  </thead>
+  <tbody>
+    <tr *ngFor="let csvRow of csvContents">
+      <td>{{ csvRow.keyword }}</td>
+      <td>{{ csvRow.startDate }}</td>
+      <td>{{ csvRow.endDate }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<button (click)="getCsvResponse()">Get Data from CSV</button>
+
+<pre>{{ csvOutput | json }}</pre>
