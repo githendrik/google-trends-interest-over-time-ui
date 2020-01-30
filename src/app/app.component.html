@@ -42,7 +42,7 @@
   </tbody>
 </table>
 
-<button (click)="getCsvResponse()">Get Data from CSV</button> ––––– <button (click)="saveToCsv()" [attr.disabled]="(csvOutput === undefined) ? true : undefined">Save to CSV</button>
+<button (click)="getCsvResponse()">Get Data from CSV</button> ––––– <button (click)="saveToExcel()" [attr.disabled]="(csvOutput === undefined) ? true : undefined">Save to Excel</button>
 
 <pre>{{ csvOutput | json }}</pre>
 

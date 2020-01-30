@@ -1,3 +1,4 @@
+import { ExcelService } from './excel.service';
 import { Component } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiHttpService } from './api-http.service';
@@ -27,7 +28,7 @@ export class AppComponent {
 
   public csvOutput: any[];
 
-  constructor(private apiHttpService: ApiHttpService, private papa: Papa) {}
+  constructor(private apiHttpService: ApiHttpService, private papa: Papa, private excelService: ExcelService) {}
 
   getManualResponse() {
     this.manualResponse$ = this.apiHttpService.getInterestOverTime(this.keyword, this.startDate, this.endDate);
@@ -107,5 +108,9 @@ export class AppComponent {
     const csvExporter = new ExportToCsv(options);
 
     csvExporter.generateCsv(this.csvOutput);
+  }
+
+  public saveToExcel() {
+    this.excelService.exportAsExcelFile(this.csvOutput, 'tv-buzz');
   }
 }
