@@ -45,9 +45,6 @@ export class AppComponent {
         const currentResponse = responses[i];
         const currentValues = currentResponse.map(r => r.value);
 
-        // Last entry first
-        currentValues.reverse();
-
         const row = [this.csvContents[i].keyword, this.csvContents[i].endDate, this.csvContents[i].startDate, ...currentValues];
         this.csvOutput.push(row);
       }
