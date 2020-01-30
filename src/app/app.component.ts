@@ -44,7 +44,11 @@ export class AppComponent {
       for (let i=0; i<this.csvContents.length; i++) {
         const currentResponse = responses[i];
         const currentValues = currentResponse.map(r => r.value);
-        const row = [this.csvContents[i].keyword, this.csvContents[i].startDate, this.csvContents[i].endDate, ...currentValues];
+
+        // Last entry first
+        currentValues.reverse();
+
+        const row = [this.csvContents[i].keyword, this.csvContents[i].endDate, this.csvContents[i].startDate, ...currentValues];
         this.csvOutput.push(row);
       }
     });
@@ -69,8 +73,8 @@ export class AppComponent {
                     cleanResult.reverse().pop(); // Remove header row
                     this.csvContents = cleanResult.reverse().map(row => ({
                       keyword: row[0],
-                      startDate: row[1],
-                      endDate: row[2]
+                      startDate: row[2],
+                      endDate: row[1]
                     }));
                 }
               });
