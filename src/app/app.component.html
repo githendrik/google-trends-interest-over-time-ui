@@ -42,8 +42,8 @@
   </tbody>
 </table>
 
-<button (click)="getCsvResponse()">Get Data from CSV</button>
+<button (click)="getCsvResponse()">Get Data from CSV</button> ––––– <button (click)="saveToCsv()" [attr.disabled]="(csvOutput === undefined) ? true : undefined">Save to CSV</button>
 
 <pre>{{ csvOutput | json }}</pre>
 
-<button (click)="saveToCsv()">Save to CSV</button>
+
