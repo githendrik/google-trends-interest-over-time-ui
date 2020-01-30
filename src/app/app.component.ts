@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { ApiHttpService } from './api-http.service';
 import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
 import { Papa } from 'ngx-papaparse';
+import { ExportToCsv } from 'export-to-csv';
 
 export interface CsvRow {
   keyword: string;
@@ -88,5 +89,23 @@ export class AppComponent {
         console.log(droppedFile.relativePath, fileEntry);
       }
     }
+  }
+
+  public saveToCsv() {
+    console.log('save');
+
+    const options = {
+      fieldSeparator: ',',
+      quoteStrings: '"',
+      decimalSeparator: '.',
+      showLabels: false,
+      showTitle: false,
+      useTextFile: false,
+      useBom: true
+    };
+
+    const csvExporter = new ExportToCsv(options);
+
+    csvExporter.generateCsv(this.csvOutput);
   }
 }
