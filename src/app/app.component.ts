@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { ApiHttpService } from './api-http.service';
 import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+import { Papa } from 'ngx-papaparse';
 
 export interface CsvRow {
   keyword: string;
@@ -25,7 +26,7 @@ export class AppComponent {
 
   public csvOutput: any[];
 
-  constructor(private apiHttpService: ApiHttpService) {}
+  constructor(private apiHttpService: ApiHttpService, private papa: Papa) {}
 
   getManualResponse() {
     this.manualResponse$ = this.apiHttpService.getInterestOverTime(this.keyword, this.startDate, this.endDate);
@@ -60,17 +61,21 @@ export class AppComponent {
           reader.onload = (e: any) => {
             const rawFile = e.target.result;
             if (typeof rawFile === 'string') {
-              const parsedFile = rawFile.split('\n').map(row => {
-                const cols = row.split(',');
-                return {
-                  keyword: cols[0],
-                  startDate: cols[1],
-                  endDate: cols[2]
-                };
+              this.papa.parse(rawFile,{
+                complete: (result) => {
+                    const cleanResult = result.data.filter(row => row.length > 1).map(row => row.map(col => col.trim()));
+
+                    console.log(cleanResult);
+                    cleanResult.reverse().pop(); // Remove header row
+                    this.csvContents = cleanResult.reverse().map(row => ({
+                      keyword: row[0],
+                      startDate: row[1],
+                      endDate: row[2]
+                    }));
+                }
               });
 
-              parsedFile.reverse().pop(); // Remove header row
-              this.csvContents = parsedFile.reverse();
+
             }
           };
 
